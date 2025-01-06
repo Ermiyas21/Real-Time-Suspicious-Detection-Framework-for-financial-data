@@ -1,0 +1,87 @@
+# version: '3'
+
+# networks:
+#   kafka-network:
+#     driver: bridge
+
+# services:
+#   zookeeper:
+#     image: confluentinc/cp-zookeeper
+#     environment:
+#       - ZOOKEEPER_CLIENT_PORT=2181
+#     networks:
+#       - kafka-network
+
+#   kafka:
+#     build: ./kafka
+#     depends_on:
+#       - zookeeper
+#     environment:
+#       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+#       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+#     networks:
+#       - kafka-network
+
+#   web:
+#     build: ./web
+#     ports:
+#       - "5000:5000"
+#     depends_on:
+#       - kafka
+#     networks:
+#       - kafka-network
+
+
+version: '3'
+
+networks:
+  kafka-network:
+    driver: bridge
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+
+  kafka1:
+    image: confluentinc/cp-kafka
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka1:9092
+      - KAFKA_BROKER_ID=1
+    networks:
+      - kafka-network
+
+  kafka2:
+    image: confluentinc/cp-kafka
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka2:9093
+      - KAFKA_BROKER_ID=2
+    networks:
+      - kafka-network
+
+  kafka3:
+    image: confluentinc/cp-kafka
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka3:9094
+      - KAFKA_BROKER_ID=3
+    networks:
+      - kafka-network
+
+  web:
+    build: ./web
+    ports:
+      - "5000:5000"
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
